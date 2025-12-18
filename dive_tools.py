@@ -98,7 +98,7 @@ class CSVData:
         self.confPairs = csvData[-2:]
 
 
-    def make_labelfiles(self, path2oneimg, labels_path, frame_name_convtn):
+    def make_labelfiles(self, path2oneimg, labels_path, frame_name_convtn=None):
 
         # get frame dimensions (assumed constant across video)
         try:
@@ -107,10 +107,16 @@ class CSVData:
         except Exception as e:
             print(e)
             print("Couldn't open image to pull height and width")
+            return  # Exit early if image can't be opened
 
         # make labels file path
-        frame = str(self.frame + 1).rjust(5,'0')
-        filename = frame_name_convtn + frame + '.txt'
+        # If frame_name_convtn is None, use the image filename directly
+        if frame_name_convtn is None:
+            img_basename = os.path.splitext(os.path.basename(path2oneimg))[0]
+            filename = img_basename + '.txt'
+        else:
+            frame = str(self.frame + 1).rjust(5,'0')
+            filename = frame_name_convtn + frame + '.txt'
         fullpath = labels_path + filename
 
         try:
